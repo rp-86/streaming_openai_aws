@@ -1,6 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 
+Parameters:
+  AccountId:
+    Type: Number
+    Default: 387507663773
+
+
 Resources:
   socketAPI:
     Type: AWS::ApiGatewayV2::Api
@@ -46,7 +52,7 @@ Resources:
       Action: 'lambda:InvokeFunction'
       Principal: apigateway.amazonaws.com
       SourceAccount: !Sub '${AWS::AccountId}'
-      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS:AccountId}:${socketAPI}/*/$connect'
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AccountId}:${socketAPI}/*/$connect'
 
   StreamingOpenai:
     Type: 'AWS::Serverless::Function'
@@ -59,6 +65,11 @@ Resources:
       Timeout: 600
       Layers:
            - !Ref OpenaiLayer
+      Environment:
+           - Key: "openai_key"
+             Value: "openai_key"
+           - Key: "region"
+             Value: !Ref "${AWS::Region}"
   
   OpenaiInteg:
     Type: AWS::ApiGatewayV2::Integration
@@ -87,7 +98,7 @@ Resources:
       Action: 'lambda:InvokeFunction'
       Principal: apigateway.amazonaws.com
       SourceAccount: !Sub '${AWS::AccountId}'
-      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS:AccountId}:${socketAPI}/*/openai'
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AccountId}:${socketAPI}/*/openai'
 
   OpenaiLayer:
     Type: AWS::Serverless::LayerVersion
