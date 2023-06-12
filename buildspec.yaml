@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install: 
+    runtime-versions:
+      python: 3.11
+  build:
+    commands:
+      - sam --version
+      - echo $SAM_BUCKET
+      - ls -ltra ./*/*
+      - sam package --s3-bucket $SAM_BUCKET  --image-repository 387507663773.dkr.ecr.ap-south-1.amazonaws.com/ocr-tax --template-file template.yaml --output-template-file packaged.yaml
+      - cat packaged.yaml
+
+artifacts:
+  files:
+    - template.yaml
+    - packaged.yaml
