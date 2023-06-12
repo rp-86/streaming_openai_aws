@@ -68,6 +68,7 @@ Resources:
       Environment:
         Variables:
           openai_key: "openai_key"
+          api_endpoint: ""
   
   OpenaiInteg:
     Type: AWS::ApiGatewayV2::Integration
@@ -108,6 +109,21 @@ Resources:
         - python3.9
     Metadata:
       BuildMethod: python3.9
+
+  Stage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      StageName: dev
+      Description: dev Stage
+      ApiId: !Ref socketAPI
+
+  Deployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+         - ConnectRoute
+         - OpenaiRoute
+    Properties:
+      ApiId: !Ref socketAPI
 
 
 
