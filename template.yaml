@@ -69,7 +69,7 @@ Resources:
         Variables:
           openai_key: "openai_key"
           region: !Ref "${AWS::Region}"
-          api_endpoint: !Ref " https://${socketAPI}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
+          api_endpoint: !Ref " https://${socketAPI}.execute-api.${AWS::Region}.amazonaws.com/dev/"
   
   OpenaiInteg:
     Type: AWS::ApiGatewayV2::Integration
