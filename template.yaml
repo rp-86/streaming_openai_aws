@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Resources:
+  socketAPI:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+        Name: !Sub 
+        ProtocolType: WEBSOCKET
+        RouteSelectionExpression: "$request.body.action"
+  
+  ConnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+         RouteKey: $connect
+         ApiId: !Ref socketAPI
+         OperationName: ConnectRoute
+         Target: !Sub "integrations/${ConnectInteg}"
+
+  ConnectLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: 'streaming-openai'
+      CodeUri: lambdas/connect_lambda/
+      Role: 'arn:aws:iam::387507663773:role/core-lambda-roles'
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.10
+      Timeout: 600
+
+  ConnectLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+         - socketAPI
+    Properties:
+      FunctionName: !Ref Extraction
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      SourceAccount: !Sub '${AWS::AccountId}'
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS:AccountId}:${socketAPI}/*/$connect'
+
+  StreamingOpenai:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: 'streaming-openai'
+      CodeUri: lambdas/streaming_lambda/
+      Role: 'arn:aws:iam::387507663773:role/core-lambda-roles'
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.10
+      Timeout: 600
+
+
+
+Outputs:
+  socketAPI:
+    Description: URL for the API Gateway
+    Value: !!Ref socketAPI
