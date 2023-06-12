@@ -111,14 +111,14 @@ Resources:
       BuildMethod: python3.9
 
   Stage:
-    Type: AWS::ApiGateway::Stage
+    Type: AWS::ApiGatewayV2::Stage
     Properties:
       StageName: dev
       Description: dev Stage
       ApiId: !Ref socketAPI
 
   Deployment:
-    Type: AWS::ApiGateway::Deployment
+    Type: AWS::ApiGatewayV2::Deployment
     DependsOn:
          - ConnectRoute
          - OpenaiRoute
