@@ -11,7 +11,7 @@ Resources:
   socketAPI:
     Type: AWS::ApiGatewayV2::Api
     Properties:
-        Name: !Sub 
+        Name: "socketAPI"
         ProtocolType: WEBSOCKET
         RouteSelectionExpression: "$request.body.action"
 
