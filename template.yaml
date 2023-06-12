@@ -68,7 +68,6 @@ Resources:
       Environment:
         Variables:
           openai_key: "openai_key"
-          region: !Ref "${AWS::Region}"
   
   OpenaiInteg:
     Type: AWS::ApiGatewayV2::Integration
