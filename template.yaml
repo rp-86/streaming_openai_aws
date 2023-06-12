@@ -66,10 +66,9 @@ Resources:
       Layers:
            - !Ref OpenaiLayer
       Environment:
-           - Key: "openai_key"
-             Value: "openai_key"
-           - Key: "region"
-             Value: !Ref "${AWS::Region}"
+        Variables:
+          openai_key: "openai_key"
+          region: !Ref "${AWS::Region}"
   
   OpenaiInteg:
     Type: AWS::ApiGatewayV2::Integration
