@@ -53,4 +53,4 @@ Resources:
 Outputs:
   socketAPI:
     Description: URL for the API Gateway
-    Value: !!Ref socketAPI
+    Value: !Ref socketAPI
