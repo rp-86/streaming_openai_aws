@@ -42,7 +42,7 @@ Resources:
     DependsOn:
          - socketAPI
     Properties:
-      FunctionName: !Ref Extraction
+      FunctionName: !Ref ConnectLambda
       Action: 'lambda:InvokeFunction'
       Principal: apigateway.amazonaws.com
       SourceAccount: !Sub '${AWS::AccountId}'
@@ -75,6 +75,17 @@ Resources:
          ApiId: !Ref socketAPI
          OperationName: OpenaiRoute
          Target: !Sub "integrations/${OpenaiInteg}"
+
+  ConnectLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+         - socketAPI
+    Properties:
+      FunctionName: !Ref StreamingOpenai
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      SourceAccount: !Sub '${AWS::AccountId}'
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS:AccountId}:${socketAPI}/*/openai'
 
 
 
