@@ -57,6 +57,8 @@ Resources:
       Handler: lambda_function.lambda_handler
       Runtime: python3.9
       Timeout: 600
+      Layers:
+           - !Ref OpenaiLayer
   
   OpenaiInteg:
     Type: AWS::ApiGatewayV2::Integration
@@ -86,6 +88,18 @@ Resources:
       Principal: apigateway.amazonaws.com
       SourceAccount: !Sub '${AWS::AccountId}'
       SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS:AccountId}:${socketAPI}/*/openai'
+
+  OpenaiLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: 'openai-layer'
+      Description: Layer for openai
+      ContentUri: layers/openai/
+      CompatibleRuntimes:
+        - python3.9
+    Metadata:
+      BuildMethod: python3.9
+
 
 
 
