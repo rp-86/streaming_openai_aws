@@ -38,15 +38,15 @@ Resources:
       SourceAccount: !Sub '${AWS::AccountId}'
       SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS:AccountId}:${socketAPI}/*/$connect'
 
-  StreamingOpenai:
-    Type: 'AWS::Serverless::Function'
-    Properties:
-      FunctionName: 'streaming-openai'
-      CodeUri: lambdas/streaming_lambda/
-      Role: 'arn:aws:iam::387507663773:role/core-lambda-roles'
-      Handler: lambda_function.lambda_handler
-      Runtime: python3.9
-      Timeout: 600
+  # StreamingOpenai:
+  #   Type: 'AWS::Serverless::Function'
+  #   Properties:
+  #     FunctionName: 'streaming-openai'
+  #     CodeUri: lambdas/streaming_lambda/
+  #     Role: 'arn:aws:iam::387507663773:role/core-lambda-roles'
+  #     Handler: lambda_function.lambda_handler
+  #     Runtime: python3.9
+  #     Timeout: 600
 
 
 
