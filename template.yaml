@@ -89,7 +89,7 @@ Resources:
          OperationName: OpenaiRoute
          Target: !Sub "integrations/${OpenaiInteg}"
 
-  ConnectLambdaPermission:
+  StreamingLambdaPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
          - socketAPI
