@@ -63,8 +63,8 @@ Resources:
       Handler: lambda_function.lambda_handler
       Runtime: python3.9
       Timeout: 600
-      # Layers:
-      #   - !Ref OpenaiLayer
+      Layers:
+        - !Ref OpenaiLayer
       Environment:
         Variables:
           openai_key: "openai_key"
@@ -99,17 +99,57 @@ Resources:
       Principal: apigateway.amazonaws.com
       SourceAccount: !Sub '${AWS::AccountId}'
       SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AccountId}:${socketAPI}/*/openai'
+  
+  DisconnectInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+         ApiId: !Ref socketAPI
+         IntegrationType: AWS_PROXY
+         CredentialsArn: 'arn:aws:iam::387507663773:role/core-lambda-roles'
+         IntegrationUri: !Sub 
+          - "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectLambdaARN}/invocations"
+          - ConnectLambdaARN: !GetAtt DiconnectLambda.Arn
+  
+  DisconnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+         RouteKey: $disconnect
+         ApiId: !Ref socketAPI
+         OperationName: DisconnectRoute
+         Target: !Sub "integrations/${DisconnectInteg}"
 
-  # OpenaiLayer:
-  #   Type: AWS::Serverless::LayerVersion
-  #   Properties:
-  #     LayerName: 'openai-layer'
-  #     Description: Layer for openai
-  #     ContentUri: layers/openai/
-  #     CompatibleRuntimes:
-  #       - python3.9
-  #   Metadata:
-  #     BuildMethod: python3.9
+  DiconnectLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: 'disconnect-lambda'
+      CodeUri: lambdas/disconnect_lambda/
+      Role: 'arn:aws:iam::387507663773:role/core-lambda-roles'
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.10
+      Timeout: 600
+
+  DisconnectLambdaPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+         - socketAPI
+    Properties:
+      FunctionName: !Ref DiconnectLambda
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      SourceAccount: !Sub '${AWS::AccountId}'
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AccountId}:${socketAPI}/*/$connect'
+
+
+  OpenaiLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: 'openai-layer'
+      Description: Layer for openai
+      ContentUri: layers/openai/
+      CompatibleRuntimes:
+        - python3.9
+    Metadata:
+      BuildMethod: python3.9
 
   Stage:
     Type: AWS::ApiGatewayV2::Stage
