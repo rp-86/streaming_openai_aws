@@ -12,10 +12,9 @@ phases:
       - ls -ltra ./*/*
       - sam validate
       - sam build --debug --parameter-overrides DockerTag=$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - sam package --s3-bucket $SAM_BUCKET --template-file template.yaml --output-template-file packaged.yaml
+      - sam package --s3-bucket $SAM_BUCKET --output-template-file packaged.yaml
       - cat packaged.yaml
 
 artifacts:
   files:
-    - template.yaml
     - packaged.yaml
