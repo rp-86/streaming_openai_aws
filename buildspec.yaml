@@ -6,11 +6,12 @@ phases:
       python: 3.9
   build:
     commands:
+      - export DOCKRE_BUILDKIT=1 
       - sam --version
       - echo $SAM_BUCKET
       - ls -ltra ./*/*
       - sam validate
-      - sam build --debug --use-container
+      - sam build --debug --parameter-overrides DockerTag=$CODEBUILD_RESOLVED_SOURCE_VERSION
       - sam package --s3-bucket $SAM_BUCKET --template-file template.yaml --output-template-file packaged.yaml
       - cat packaged.yaml
 
