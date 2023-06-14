@@ -72,7 +72,9 @@ Resources:
     Properties:
          ApiId: !Ref socketAPI
          IntegrationType: AWS_PROXY
-         CredentialsArn: 'arn:aws:iam::387507663773:role/core-lambda-roles'
+         CredentialsArn: !Sub 
+          - "{role}"
+          - role: !GetAtt MyIAMRole.Arn
          IntegrationUri: !Sub 
           - "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectLambdaARN}/invocations"
           - ConnectLambdaARN: !GetAtt ConnectLambda.Arn
@@ -90,7 +92,9 @@ Resources:
     Properties:
       FunctionName: 'connect-lambda'
       CodeUri: lambdas/connect_lambda/
-      Role: !GetAtt MyIAMRole.Arn
+      Role: !Sub 
+        - "{role}"
+        - role: !GetAtt MyIAMRole.Arn
       Handler: lambda_function.lambda_handler
       Runtime: python3.9
       Timeout: 600
@@ -128,7 +132,9 @@ Resources:
     Properties:
          ApiId: !Ref socketAPI
          IntegrationType: AWS_PROXY
-         CredentialsArn: !GetAtt MyIAMRole.Arn
+         CredentialsArn: !Sub 
+          - "{role}"
+          - role: !GetAtt MyIAMRole.Arn
          IntegrationUri: !Sub 
           - "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectLambdaARN}/invocations"
           - ConnectLambdaARN: !GetAtt StreamingOpenai.Arn
@@ -157,7 +163,9 @@ Resources:
     Properties:
          ApiId: !Ref socketAPI
          IntegrationType: AWS_PROXY
-         CredentialsArn: !GetAtt MyIAMRole.Arn
+         CredentialsArn: !Sub 
+          - "{role}"
+          - role: !GetAtt MyIAMRole.Arn
          IntegrationUri: !Sub 
           - "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectLambdaARN}/invocations"
           - ConnectLambdaARN: !GetAtt DiconnectLambda.Arn
@@ -175,7 +183,9 @@ Resources:
     Properties:
       FunctionName: 'disconnect-lambda'
       CodeUri: lambdas/disconnect_lambda/
-      Role: !GetAtt MyIAMRole.Arn
+      Role: !Sub 
+        - "{role}"
+        - role: !GetAtt MyIAMRole.Arn
       Handler: lambda_function.lambda_handler
       Runtime: python3.9
       Timeout: 600
