@@ -1,3 +1,1 @@
-openai
-requests
-pandas
+openai==0.26.0
