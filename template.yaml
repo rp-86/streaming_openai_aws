@@ -40,7 +40,7 @@ Resources:
       CodeUri: lambdas/connect_lambda/
       Role: 'arn:aws:iam::387507663773:role/core-lambda-roles'
       Handler: lambda_function.lambda_handler
-      Runtime: python3.10
+      Runtime: python3.9
       Timeout: 600
 
   ConnectLambdaPermission:
@@ -125,7 +125,7 @@ Resources:
       CodeUri: lambdas/disconnect_lambda/
       Role: 'arn:aws:iam::387507663773:role/core-lambda-roles'
       Handler: lambda_function.lambda_handler
-      Runtime: python3.10
+      Runtime: python3.9
       Timeout: 600
 
   DisconnectLambdaPermission:
