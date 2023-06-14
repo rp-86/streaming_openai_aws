@@ -17,6 +17,7 @@ class InvokeOpenai:
     
     def call_openai(self, request, model="gpt-3.5-turbo"):
         openai.api_key = self.read_ssm_parameter()
+        response = ""
         
         for resp in openai.ChatCompletion.create(
                 model=model,
@@ -29,7 +30,7 @@ class InvokeOpenai:
             ):
             if "content" in resp.choices[0]["delta"]:
                 res = resp.choices[0]["delta"]["content"]
-                response += resp
+                response += res
                 if res != '':
                     self.params["Data"] = res
                     self.conn.post_to_connection(**self.params)

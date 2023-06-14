@@ -1,13 +1,65 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 
-Parameters:
-  AccountId:
-    Type: Number
-    Default: 387507663773
 
 
 Resources:
+  Resources:
+  MyIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: service-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CloudWatchLogsFullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: logs:*
+                Resource: '*'
+        - PolicyName: AmazonDynamoDBFullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: '*'
+        - PolicyName: AmazonS3FullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:*
+                Resource: '*'
+        - PolicyName: AmazonSSMFullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ssm:*
+                Resource: '*'
+        - PolicyName: AmazonAPIGatewayInvokeFullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: apigateway:*
+                Resource: '*'
+        - PolicyName: AWSLambda_FullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: lambda:*
+                Resource: '*'
+
   socketAPI:
     Type: AWS::ApiGatewayV2::Api
     Properties:
@@ -38,7 +90,7 @@ Resources:
     Properties:
       FunctionName: 'connect-lambda'
       CodeUri: lambdas/connect_lambda/
-      Role: 'arn:aws:iam::387507663773:role/core-lambda-roles'
+      Role: !GetAtt MyIAMRole.Arn
       Handler: lambda_function.lambda_handler
       Runtime: python3.9
       Timeout: 600
@@ -52,14 +104,14 @@ Resources:
       Action: 'lambda:InvokeFunction'
       Principal: apigateway.amazonaws.com
       SourceAccount: !Sub '${AWS::AccountId}'
-      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AccountId}:${socketAPI}/*/$connect'
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${socketAPI}/*/$connect'
 
   StreamingOpenai:
     Type: 'AWS::Serverless::Function'
     Properties:
       FunctionName: 'streaming-openai'
       CodeUri: lambdas/streaming_lambda/
-      Role: 'arn:aws:iam::387507663773:role/core-lambda-roles'
+      Role: !GetAtt MyIAMRole.Arn
       Handler: lambda_function.lambda_handler
       Runtime: python3.9
       Timeout: 600
@@ -76,7 +128,7 @@ Resources:
     Properties:
          ApiId: !Ref socketAPI
          IntegrationType: AWS_PROXY
-         CredentialsArn: 'arn:aws:iam::387507663773:role/core-lambda-roles'
+         CredentialsArn: !GetAtt MyIAMRole.Arn
          IntegrationUri: !Sub 
           - "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectLambdaARN}/invocations"
           - ConnectLambdaARN: !GetAtt StreamingOpenai.Arn
@@ -98,14 +150,14 @@ Resources:
       Action: 'lambda:InvokeFunction'
       Principal: apigateway.amazonaws.com
       SourceAccount: !Sub '${AWS::AccountId}'
-      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AccountId}:${socketAPI}/*/openai'
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${socketAPI}/*/openai'
   
   DisconnectInteg:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
          ApiId: !Ref socketAPI
          IntegrationType: AWS_PROXY
-         CredentialsArn: 'arn:aws:iam::387507663773:role/core-lambda-roles'
+         CredentialsArn: !GetAtt MyIAMRole.Arn
          IntegrationUri: !Sub 
           - "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectLambdaARN}/invocations"
           - ConnectLambdaARN: !GetAtt DiconnectLambda.Arn
@@ -123,7 +175,7 @@ Resources:
     Properties:
       FunctionName: 'disconnect-lambda'
       CodeUri: lambdas/disconnect_lambda/
-      Role: 'arn:aws:iam::387507663773:role/core-lambda-roles'
+      Role: !GetAtt MyIAMRole.Arn
       Handler: lambda_function.lambda_handler
       Runtime: python3.9
       Timeout: 600
@@ -137,7 +189,7 @@ Resources:
       Action: 'lambda:InvokeFunction'
       Principal: apigateway.amazonaws.com
       SourceAccount: !Sub '${AWS::AccountId}'
-      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AccountId}:${socketAPI}/*/$connect'
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${socketAPI}/*/$connect'
 
 
   OpenaiLayer:
