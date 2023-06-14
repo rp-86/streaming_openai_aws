@@ -9,6 +9,8 @@ phases:
       - sam --version
       - echo $SAM_BUCKET
       - ls -ltra ./*/*
+      - sam validate
+      - sam build
       - sam package --s3-bucket $SAM_BUCKET --template-file template.yaml --output-template-file packaged.yaml
       - cat packaged.yaml
 
