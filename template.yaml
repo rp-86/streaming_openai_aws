@@ -69,6 +69,7 @@ Resources:
 
   ConnectInteg:
     Type: AWS::ApiGatewayV2::Integration
+    DependsOn: MyIAMRole
     Properties:
          ApiId: !Ref socketAPI
          IntegrationType: AWS_PROXY
@@ -89,6 +90,7 @@ Resources:
 
   ConnectLambda:
     Type: 'AWS::Serverless::Function'
+    DependsOn: MyIAMRole
     Properties:
       FunctionName: 'connect-lambda'
       CodeUri: lambdas/connect_lambda/
@@ -112,6 +114,7 @@ Resources:
 
   StreamingOpenai:
     Type: 'AWS::Serverless::Function'
+    DependsOn: MyIAMRole
     Properties:
       FunctionName: 'streaming-openai'
       CodeUri: lambdas/streaming_lambda/
@@ -131,6 +134,7 @@ Resources:
   
   OpenaiInteg:
     Type: AWS::ApiGatewayV2::Integration
+    DependsOn: MyIAMRole
     Properties:
          ApiId: !Ref socketAPI
          IntegrationType: AWS_PROXY
@@ -162,6 +166,7 @@ Resources:
   
   DisconnectInteg:
     Type: AWS::ApiGatewayV2::Integration
+    DependsOn: MyIAMRole
     Properties:
          ApiId: !Ref socketAPI
          IntegrationType: AWS_PROXY
@@ -182,6 +187,7 @@ Resources:
 
   DiconnectLambda:
     Type: 'AWS::Serverless::Function'
+    DependsOn: MyIAMRole
     Properties:
       FunctionName: 'disconnect-lambda'
       CodeUri: lambdas/disconnect_lambda/
