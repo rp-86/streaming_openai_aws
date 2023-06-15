@@ -115,7 +115,9 @@ Resources:
     Properties:
       FunctionName: 'streaming-openai'
       CodeUri: lambdas/streaming_lambda/
-      Role: !GetAtt MyIAMRole.Arn
+      Role: !Sub 
+        - "{role}"
+        - role: !GetAtt MyIAMRole.Arn
       Handler: lambda_function.lambda_handler
       Runtime: python3.9
       Timeout: 600
