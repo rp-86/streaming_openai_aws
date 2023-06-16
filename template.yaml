@@ -4,7 +4,6 @@ Transform: 'AWS::Serverless-2016-10-31'
 
 
 Resources:
-  Resources:
   MyIAMRole:
     Type: AWS::IAM::Role
     Properties:
